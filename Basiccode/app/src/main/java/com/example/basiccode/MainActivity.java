@@ -118,44 +118,12 @@ public class MainActivity extends AppCompatActivity {
 
         //주차인식 버튼
         recogButton.setOnClickListener(new View.OnClickListener() {
-            Bitmap bitmap;
-            Bitmap rotatedBitmap;
             @Override
             public void onClick(View v) {
                 imageCapture.takePicture(ContextCompat.getMainExecutor(MainActivity.this),
                         new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image){
-//                                @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
-//                                Image mediaImage=image.getImage();
-//                                bitmap = mediaImageToBitmap(mediaImage);
-//                                Log.d("MainActivity", Integer.toString(bitmap.getWidth())); //4128
-//                                Log.d("MainActivity", Integer.toString(bitmap.getHeight())); //3096
-//                                rotatedBitmap=rotateBitmap(bitmap,image.getImageInfo().getRotationDegrees());
-//                                imageView.setImageBitmap(rotatedBitmap);
-//                                super.onCaptureSuccess(image);
-
-                                //OCR 부분
-                                //이미지에서 FirebaseVisionImage 객체 생성
-                                //이미지에서 OCR을 수행하려면 인스턴스를 생성해야한다. 따라서 FirebaseVisionImage을 이용
-                                //visionImage=FirebaseVisionImage.fromBitmap(rotatedBitmap);
-                                //텍스트인식기 getOnDeviceTextRecognizer()로 생성
-//                                FirebaseVisionTextRecognizer textRecognizer=FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-//
-//                                textRecognizer.processImage(visionImage)
-//                                        .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-//                                            @Override
-//                                            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-//                                                processTextRecognitionResult(firebaseVisionText);
-//                                            }
-//                                        })
-//                                        .addOnFailureListener(new OnFailureListener() {
-//                                            @Override
-//                                            public void onFailure(@NonNull Exception e) {
-//                                                Toast.makeText(MainActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        });
-
                                 analyze(image);
                             }
                         });
@@ -166,27 +134,24 @@ public class MainActivity extends AppCompatActivity {
     public void analyze(@NonNull ImageProxy imageProxy) {
         Bitmap bitmap;
         Bitmap rotatedBitmap;
+
         @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
         Image mediaImage=imageProxy.getImage();
         bitmap = mediaImageToBitmap(mediaImage);
-        Log.d("MainActivity", Integer.toString(bitmap.getWidth())); //4128
-        Log.d("MainActivity", Integer.toString(bitmap.getHeight())); //3096
         rotatedBitmap=rotateBitmap(bitmap,imageProxy.getImageInfo().getRotationDegrees());
         imageView.setImageBitmap(rotatedBitmap);
 
         InputImage image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+
         //korean version
         TextRecognizer textRecognizer = TextRecognition.getClient(new KoreanTextRecognizerOptions.Builder().build());
-
         textRecognizer.process(image)
                 .addOnSuccessListener(new OnSuccessListener<Text>() {
                     @Override
                     public void onSuccess(Text text) {
                         Map<String, Object> textResult = new HashMap<>();
-
                         textResult.put("text", text.getText());
-
                         List<Map<String, Object>> textBlocks = new ArrayList<>();
                         for (Text.TextBlock block : text.getTextBlocks()) {
                             Map<String, Object> blockData = new HashMap<>();
@@ -267,67 +232,6 @@ public class MainActivity extends AppCompatActivity {
         frame.put("bottom", rect.bottom);
         return frame;
     }
-
-    private void processTextRecognitionResult(FirebaseVisionText text) {
-        StringBuilder fullText = new StringBuilder();
-        List<FirebaseVisionText.TextBlock> blocks = text.getTextBlocks();
-        if (blocks.size() == 0) {
-            Log.d("TAG", "No text found");
-            return;
-        }
-        for (int i = 0; i < blocks.size(); i++) {
-            List<FirebaseVisionText.Line> lines = blocks.get(i).getLines();
-            for (int j = 0; j < lines.size(); j++) {
-                List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
-                for (int k = 0; k < elements.size(); k++) {
-                    fullText.append(elements.get(k).getText());
-                    fullText.append(" ");
-                }
-            }
-        }
-        //Set text to display
-        //다이얼로그에 인식결과 띄우기
-        showDialog_OCR(fullText.toString());
-    }
-    private void processTextRecognitionResult2(FirebaseVisionText text) {
-        StringBuilder fullText = new StringBuilder();
-        List<FirebaseVisionText.TextBlock> blocks = text.getTextBlocks();
-        if (blocks.size() == 0) {
-            Log.d("TAG", "No text found");
-            return;
-        }
-        for (int i = 0; i < blocks.size(); i++) {
-            List<FirebaseVisionText.Line> lines = blocks.get(i).getLines();
-            for (int j = 0; j < lines.size(); j++) {
-                List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
-                for (int k = 0; k < elements.size(); k++) {
-                    fullText.append(elements.get(k).getText());
-                    fullText.append(" ");
-                }
-            }
-        }
-        //Set text to display
-        //다이얼로그에 인식결과 띄우기
-        showDialog_OCR(fullText.toString());
-    }
-
-    //언어설정
-    private void intitializeDetector(int script){
-        closeDetector();
-        Log.e("script lang", String.valueOf(script));
-        scriptLang = script;
-        switch (script){
-            case 0 : textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-                break;
-            case 1: textRecognizer = TextRecognition.getClient(new KoreanTextRecognizerOptions.Builder().build());
-        }
-    }
-    private void closeDetector() {
-        if(textRecognizer==null) return;
-        textRecognizer.close();
-        textRecognizer = null;
-    }
-
     //카메라 프리뷰 설정
     void bindPreview(){
         previewView.setScaleType(PreviewView.ScaleType.FIT_CENTER);
@@ -370,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
             byte[] imageBytes = out.toByteArray();
             bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         }
-
         return bitmap;
     }
     public static byte[] mediaImageToByteArray(Image mediaImage) {
@@ -398,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
             Matrix matrix = new Matrix();
             matrix.postRotate(degree);
             Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-
             return rotatedBitmap;
         }
         catch (Exception e) {
@@ -406,26 +308,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
-    //OCR 대화상자
-    void showDialog_OCR(String Text){
-        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this)
-                .setMessage("차량번호\n"+Text+"\n 시간\n "+CameraTime.Cameratime())
-                .setPositiveButton("Send", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setNegativeButton("Retry", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-        AlertDialog dialog=builder.create();
-        dialog.show();
-    }
-
     void showDialog_OCR2(String Text){
         AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this)
                 .setMessage("인식결과\n" +Text+"\n 시간\n "+CameraTime.Cameratime())
@@ -438,7 +320,6 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("Retry", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                     }
                 });
         AlertDialog dialog=builder.create();
