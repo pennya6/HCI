@@ -1,18 +1,5 @@
 package com.example.basiccode;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.AspectRatio;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageProxy;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -26,31 +13,33 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.media.Image;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.AspectRatio;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageProxy;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.text.FirebaseVisionText;
-import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions;
-import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
-import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions;
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -146,48 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Text>() {
                     @Override
                     public void onSuccess(Text text) {
-                        Map<String, Object> textResult = new HashMap<>();
-                        textResult.put("text", text.getText());
-                        List<Map<String, Object>> textBlocks = new ArrayList<>();
-                        for (Text.TextBlock block : text.getTextBlocks()) {
-                            Map<String, Object> blockData = new HashMap<>();
-
-                            addData(blockData,
-                                    block.getText(),
-                                    block.getBoundingBox(),
-                                    block.getCornerPoints(),
-                                    block.getRecognizedLanguage());
-
-                            List<Map<String, Object>> textLines = new ArrayList<>();
-                            for (Text.Line line : block.getLines()) {
-                                Map<String, Object> lineData = new HashMap<>();
-
-                                addData(lineData,
-                                        line.getText(),
-                                        line.getBoundingBox(),
-                                        line.getCornerPoints(),
-                                        line.getRecognizedLanguage());
-
-                                List<Map<String, Object>> elementsData = new ArrayList<>();
-                                for (Text.Element element : line.getElements()) {
-                                    Map<String, Object> elementData = new HashMap<>();
-
-                                    addData(elementData,
-                                            element.getText(),
-                                            element.getBoundingBox(),
-                                            element.getCornerPoints(),
-                                            element.getRecognizedLanguage());
-
-                                    elementsData.add(elementData);
-                                }
-                                lineData.put("elements", elementsData);
-                                textLines.add(lineData);
-                            }
-                            blockData.put("lines", textLines);
-                            textBlocks.add(blockData);
-                        }
-                        textResult.put("blocks", textBlocks);
-                        showDialog_OCR2(textResult.get("text").toString());
+                        process(text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -196,6 +144,50 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+    private void process(Text text){
+        Map<String, Object> textResult = new HashMap<>();
+        textResult.put("text", text.getText());
+        List<Map<String, Object>> textBlocks = new ArrayList<>();
+        for (Text.TextBlock block : text.getTextBlocks()) {
+            Map<String, Object> blockData = new HashMap<>();
+
+            addData(blockData,
+                    block.getText(),
+                    block.getBoundingBox(),
+                    block.getCornerPoints(),
+                    block.getRecognizedLanguage());
+
+            List<Map<String, Object>> textLines = new ArrayList<>();
+            for (Text.Line line : block.getLines()) {
+                Map<String, Object> lineData = new HashMap<>();
+
+                addData(lineData,
+                        line.getText(),
+                        line.getBoundingBox(),
+                        line.getCornerPoints(),
+                        line.getRecognizedLanguage());
+
+                List<Map<String, Object>> elementsData = new ArrayList<>();
+                for (Text.Element element : line.getElements()) {
+                    Map<String, Object> elementData = new HashMap<>();
+
+                    addData(elementData,
+                            element.getText(),
+                            element.getBoundingBox(),
+                            element.getCornerPoints(),
+                            element.getRecognizedLanguage());
+
+                    elementsData.add(elementData);
+                }
+                lineData.put("elements", elementsData);
+                textLines.add(lineData);
+            }
+            blockData.put("lines", textLines);
+            textBlocks.add(blockData);
+        }
+        textResult.put("blocks", textBlocks);
+        showDialog_OCR2(textResult.get("text").toString());
     }
     private void addData(Map<String, Object> addTo,
                          String text,
