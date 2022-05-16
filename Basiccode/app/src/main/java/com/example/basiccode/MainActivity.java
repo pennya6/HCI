@@ -50,6 +50,7 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,10 +68,6 @@ public class MainActivity extends AppCompatActivity {
     ProcessCameraProvider processCameraProvider;
     int lensFacing = CameraSelector.LENS_FACING_BACK;
     ImageCapture imageCapture;
-
-    FirebaseVisionImage visionImage;
-
-    private TextRecognizer textRecognizer ;
     private int scriptLang = -1;
 
     @Override
@@ -83,8 +80,6 @@ public class MainActivity extends AppCompatActivity {
         recogButton=findViewById(R.id.RecogButton); //인식버튼
         imageView=findViewById(R.id.imageview);
 
-
-        
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
 
         try{
@@ -126,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onCaptureSuccess(@NonNull ImageProxy image){
                                 analyze(image);
                             }
+
                         });
             };
         });
@@ -200,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
     private void addData(Map<String, Object> addTo,
                          String text,
