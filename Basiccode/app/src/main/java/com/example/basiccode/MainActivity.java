@@ -109,11 +109,12 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image){
                                 analyze(image);
-                                processCameraProvider.unbindAll();
-                                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                                    bindPreview();
-                                    bindImageCapture();
-                                }
+                                image.close();
+//                                processCameraProvider.unbindAll();
+//                                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+//                                    bindPreview();
+//                                    bindImageCapture();
+//                                }
                             }
                         });
             };
