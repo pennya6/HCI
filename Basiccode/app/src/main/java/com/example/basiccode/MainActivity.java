@@ -3,6 +3,7 @@ package com.example.basiccode;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +16,6 @@ import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     Button startButton;
     Button stopButton;
     Button recogButton;
-    ImageView imageView;
     String TAG="MainActivity";
     ProcessCameraProvider processCameraProvider;
     int lensFacing = CameraSelector.LENS_FACING_BACK;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         recogButton=findViewById(R.id.RecogButton); //인식버튼
-        imageView=findViewById(R.id.imageview);
+
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
 
@@ -129,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         Image mediaImage=imageProxy.getImage();
         bitmap = mediaImageToBitmap(mediaImage);
         rotatedBitmap=rotateBitmap(bitmap,imageProxy.getImageInfo().getRotationDegrees());
-        imageView.setImageBitmap(rotatedBitmap);
 
         InputImage image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
@@ -192,7 +190,11 @@ public class MainActivity extends AppCompatActivity {
             textBlocks.add(blockData);
         }
         textResult.put("blocks", textBlocks);
-        showDialog_OCR2(textResult.get("text").toString());
+        //화면전환
+        Intent intent=new Intent(getApplicationContext(),Result.class);
+        intent.putExtra("text",textResult.get("text").toString());
+        startActivity(intent);
+        //showDialog_OCR2(textResult.get("text").toString());
     }
     private void addData(Map<String, Object> addTo,
                          String text,
