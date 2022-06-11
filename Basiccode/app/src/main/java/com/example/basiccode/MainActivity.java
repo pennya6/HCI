@@ -2,7 +2,6 @@ package com.example.basiccode;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,7 +18,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraSelector;
@@ -109,11 +107,6 @@ public class MainActivity extends AppCompatActivity {
                             public void onCaptureSuccess(@NonNull ImageProxy image){
                                 analyze(image);
                                 image.close();
-//                                processCameraProvider.unbindAll();
-//                                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-//                                    bindPreview();
-//                                    bindImageCapture();
-//                                }
                             }
                         });
             };
@@ -194,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent=new Intent(getApplicationContext(),Result.class);
         intent.putExtra("text",textResult.get("text").toString());
         startActivity(intent);
-        //showDialog_OCR2(textResult.get("text").toString());
     }
     private void addData(Map<String, Object> addTo,
                          String text,
@@ -301,22 +293,5 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
-    }
-    void showDialog_OCR2(String Text){
-        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this)
-                .setMessage("인식결과\n" +Text+"\n 시간\n "+CameraTime.Cameratime())
-                .setPositiveButton("Send", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setNegativeButton("Retry", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        AlertDialog dialog=builder.create();
-        dialog.show();
     }
 }
