@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +20,9 @@ public class Result extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
 
-    TextView textView;
+    TextView textname;
+    TextView textefficacy;
+    TextView texttaking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +31,10 @@ public class Result extends AppCompatActivity {
         Intent intent=getIntent();
         String result=intent.getStringExtra("text");
 
-        textView=findViewById(R.id.textView);
-        textView.setText(result);
+        textname=findViewById(R.id.textView);
+        textefficacy=findViewById(R.id.efficacy);
+        texttaking=findViewById(R.id.taking);
+        //textView.setText(result);
 
         //파이어베이스 데이터 조회를 위한 DatabaseReference 인스턴스 필요
         reference=FirebaseDatabase.getInstance().getReference();
@@ -39,15 +42,16 @@ public class Result extends AppCompatActivity {
 
     }
     private void readDB(){
-        reference.child("id1").addValueEventListener(new ValueEventListener() {
+        reference.child("medical_information").child("id1").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.getValue(FirebasePost.class)!=null){
-                    FirebasePost firebasePost=snapshot.getValue(FirebasePost.class);
-                    Log.w("firebasedata","getdata"+firebasePost.toString());
-                }else{
-                    Toast.makeText(Result.this,"No data",Toast.LENGTH_SHORT).show();
-                }
+                FirebasePost firebasePost=snapshot.getValue(FirebasePost.class);
+                String name=firebasePost.getName();
+                String efficacy=firebasePost.getEfficacy();
+                String taking=firebasePost.getTaking();
+                textname.setText(name);
+                textefficacy.setText(efficacy);
+                texttaking.setText(taking);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError){
