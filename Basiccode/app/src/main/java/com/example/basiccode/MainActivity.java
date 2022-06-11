@@ -29,6 +29,7 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.mlkit.vision.common.InputImage;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     ImageCapture imageCapture;
     private int scriptLang = -1;
 
+    //DrawOn drawOn=new DrawOn(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         recogButton=findViewById(R.id.RecogButton); //인식버튼
-
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
 
@@ -85,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     bindPreview();
                     bindImageCapture();
+                    //drawOn.setVisibility(View.VISIBLE);
+                    //previewView.addView(drawOn);
+
+
                 }
             }
         });
@@ -125,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         InputImage image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
 
+        //image roi
+
         //korean version
         TextRecognizer textRecognizer = TextRecognition.getClient(new KoreanTextRecognizerOptions.Builder().build());
         textRecognizer.process(image)
@@ -140,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+    public void roi(Bitmap bitmap){
+//        Mat hierarchy=new Mat();
+//
+//        bitmap=Bitmap.createBitmap(myBitmap,(int)rect.tl().x,(int)rect.tl().y,rect.width,rect.height);
     }
     private void process(Text text){
         Map<String, Object> textResult = new HashMap<>();
@@ -294,4 +307,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
+
 }

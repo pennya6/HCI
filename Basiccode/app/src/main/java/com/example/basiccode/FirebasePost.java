@@ -48,8 +48,7 @@ public class FirebasePost {
     public FirebasePost(){
 
     }
-    public FirebasePost(String id,String name,String taking,String efficacy){
-        this.id=id;
+    public FirebasePost(String name,String taking,String efficacy){
         this.name=name;
         this.taking=taking;
         this.efficacy=efficacy;
@@ -57,7 +56,6 @@ public class FirebasePost {
     @Exclude
     public Map<String ,Object> toMap(){
         HashMap<String,Object> result=new HashMap<>();
-        result.put("id",id);
         result.put("name",name);
         result.put("taking",taking);
         result.put("efficacy",efficacy);

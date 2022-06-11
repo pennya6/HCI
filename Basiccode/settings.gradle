@@ -8,3 +8,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Basiccode"
 include ':app'
+include ':java'
+include ':OpenCV'
+include ':opencv'
