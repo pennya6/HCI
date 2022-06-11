@@ -34,7 +34,6 @@ public class Result extends AppCompatActivity {
         textname=findViewById(R.id.textView);
         textefficacy=findViewById(R.id.efficacy);
         texttaking=findViewById(R.id.taking);
-        //textView.setText(result);
 
         //파이어베이스 데이터 조회를 위한 DatabaseReference 인스턴스 필요
         reference=FirebaseDatabase.getInstance().getReference();
@@ -42,7 +41,7 @@ public class Result extends AppCompatActivity {
 
     }
     private void readDB(){
-        reference.child("medical_information").child("id1").addValueEventListener(new ValueEventListener() {
+        reference.child("medical_information").child("id2").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 FirebasePost firebasePost=snapshot.getValue(FirebasePost.class);
