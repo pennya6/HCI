@@ -149,11 +149,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void roi(Bitmap bitmap){
-//        Mat hierarchy=new Mat();
-//
-//        bitmap=Bitmap.createBitmap(myBitmap,(int)rect.tl().x,(int)rect.tl().y,rect.width,rect.height);
-    }
     private void process(Text text){
         Map<String, Object> textResult = new HashMap<>();
         textResult.put("text", text.getText());

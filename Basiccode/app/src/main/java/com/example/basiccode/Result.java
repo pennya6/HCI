@@ -14,6 +14,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Result extends AppCompatActivity {
 
     //DB 연동
@@ -25,12 +27,14 @@ public class Result extends AppCompatActivity {
     TextView textefficacy;
     TextView texttaking;
 
-    //ArrayList<FirebasePost> firebasePosts=new ArrayList<>();
+    ArrayList<FirebasePost> firebasePosts=new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+
         Intent intent=getIntent();
         String result=intent.getStringExtra("text");
 
@@ -42,57 +46,27 @@ public class Result extends AppCompatActivity {
         //파이어베이스 데이터 조회를 위한 DatabaseReference 인스턴스 필요
         reference=FirebaseDatabase.getInstance().getReference();
         readDB(result);
+        Log.w("Result","result="+result);
 
     }
     private void readDB(String result){
-//        reference.child("medical_information").child("id2").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                FirebasePost firebasePost=snapshot.getValue(FirebasePost.class);
-//                String name=firebasePost.getName();
-//                String efficacy=firebasePost.getEfficacy();
-//                String taking=firebasePost.getTaking();
-//                textname.setText(name);
-//                textefficacy.setText(efficacy);
-//                texttaking.setText(taking);
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError){
-//                Log.w("firebasedata","loadpost:oncancelled",databaseError.toException());
-//            }
-//        });
-
-
-//        reference.child("medical_information").orderByChild("name").equalTo(result).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                firebasePosts.clear();
-//                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-//                    FirebasePost firebasePost=dataSnapshot.getValue(FirebasePost.class);
-//                    firebasePosts.add(firebasePost);
-//                }
-//                Log.w("Result","result="+result);
-//                Log.w("Result","firebaseList="+firebasePosts.toString());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w("firebasedata","loadpost:oncancelled",error.toException());
-//            }
-//        });
-
         reference.child("medical_information").orderByChild("name").equalTo(result).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                FirebasePost firebasePost=snapshot.getValue(FirebasePost.class);
-                String name=firebasePost.getName();
-                String efficacy=firebasePost.getEfficacy();
-                String taking=firebasePost.getTaking();
-                textname.setText(name);
-                textefficacy.setText(efficacy);
-                texttaking.setText(taking);
+                firebasePosts.clear();
+                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    FirebasePost firebasePost=dataSnapshot.getValue(FirebasePost.class);
+                    firebasePosts.add(firebasePost);
+                    String name=firebasePost.getName();
+                    String efficacy=firebasePost.getEfficacy();
+                    String taking=firebasePost.getTaking();
+                    textname.setText(name);
+                    textefficacy.setText(efficacy);
+                    texttaking.setText(taking);
+                }
+
                 Log.w("Result","result="+result);
-                Log.w("Result","firebaseList="+name);
+                Log.w("Result","firebaseList="+firebasePosts.toString());
             }
 
             @Override
