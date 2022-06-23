@@ -131,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
         InputImage image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
 
-        //image roi
+        //구글 이미지 크기 확인
+        //image crop
 
         //korean version
         TextRecognizer textRecognizer = TextRecognition.getClient(new KoreanTextRecognizerOptions.Builder().build());
