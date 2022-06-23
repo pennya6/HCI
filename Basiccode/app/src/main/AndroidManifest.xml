@@ -9,6 +9,7 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:allowBackup="true"
@@ -27,9 +28,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".Result"/>
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"

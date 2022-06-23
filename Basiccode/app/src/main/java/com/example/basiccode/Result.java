@@ -1,11 +1,14 @@
 package com.example.basiccode;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -15,8 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class Result extends AppCompatActivity {
+public class Result extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     //DB 연동
     FirebaseDatabase database;
@@ -29,6 +33,7 @@ public class Result extends AppCompatActivity {
 
     ArrayList<FirebasePost> firebasePosts=new ArrayList<>();
 
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,8 @@ public class Result extends AppCompatActivity {
 
         Intent intent=getIntent();
         String result=intent.getStringExtra("text");
+
+        tts=new TextToSpeech(this,this);
 
         textname=findViewById(R.id.textView);
         textefficacy=findViewById(R.id.efficacy);
@@ -63,6 +70,8 @@ public class Result extends AppCompatActivity {
                     textname.setText(name);
                     textefficacy.setText(efficacy);
                     texttaking.setText(taking);
+
+                    speakOut();
                 }
 
                 Log.w("Result","result="+result);
@@ -74,5 +83,37 @@ public class Result extends AppCompatActivity {
                 Log.w("firebasedata","loadpost:oncancelled",error.toException());
             }
         });
+    }
+    @RequiresApi(api= Build.VERSION_CODES.LOLLIPOP)
+    private void speakOut(){
+        //음성톤 설정
+        tts.setPitch((float)0.6);
+        //음성 속도 지정
+        tts.setSpeechRate((float)0.1);
+        //출력할 텍스트,
+        tts.speak((CharSequence) textname,TextToSpeech.QUEUE_ADD,null,"id1");
+    }
+
+    @Override
+    @RequiresApi(api= Build.VERSION_CODES.LOLLIPOP)
+    public void onInit(int status) {
+        if(status==TextToSpeech.SUCCESS){
+            int result=tts.setLanguage(Locale.KOREA);
+            if(result==TextToSpeech.LANG_MISSING_DATA||result==TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.e("TTS","This Language is not supported");
+            }else{
+                speakOut();
+            }
+        }else {
+            Log.e("TTS","Initilization Failed");
+        }
+    }
+    @Override
+    public void onDestroy() {
+        if(tts!=null){ // 사용한 TTS객체 제거
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
 }
