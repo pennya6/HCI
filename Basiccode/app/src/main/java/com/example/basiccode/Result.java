@@ -30,10 +30,11 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
     TextView textname;
     TextView textefficacy;
     TextView texttaking;
+    String name, efficacy,taking;
 
     ArrayList<FirebasePost> firebasePosts=new ArrayList<>();
 
-    private TextToSpeech tts;
+    private TextToSpeech tts; //TTS 변수 선언
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,8 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
         readDB(result);
         Log.w("Result","result="+result);
 
+
+
     }
     private void readDB(String result){
         reference.child("medical_information").orderByChild("name").equalTo(result).addValueEventListener(new ValueEventListener() {
@@ -64,13 +67,12 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
                     FirebasePost firebasePost=dataSnapshot.getValue(FirebasePost.class);
                     firebasePosts.add(firebasePost);
-                    String name=firebasePost.getName();
-                    String efficacy=firebasePost.getEfficacy();
-                    String taking=firebasePost.getTaking();
+                    name=firebasePost.getName();
+                    efficacy=firebasePost.getEfficacy();
+                    taking=firebasePost.getTaking();
                     textname.setText(name);
                     textefficacy.setText(efficacy);
                     texttaking.setText(taking);
-
                     speakOut();
                 }
 
@@ -87,11 +89,13 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
     @RequiresApi(api= Build.VERSION_CODES.LOLLIPOP)
     private void speakOut(){
         //음성톤 설정
-        tts.setPitch((float)0.6);
+        tts.setPitch((float)0.8);
         //음성 속도 지정
-        tts.setSpeechRate((float)0.1);
+        tts.setSpeechRate((float)0.8);
         //출력할 텍스트,
-        tts.speak((CharSequence) textname,TextToSpeech.QUEUE_ADD,null,"id1");
+        tts.speak(name,TextToSpeech.QUEUE_ADD,null,"id1");
+        tts.speak(efficacy,TextToSpeech.QUEUE_ADD,null,"id2");
+        tts.speak(taking,TextToSpeech.QUEUE_ADD,null,"id3");
     }
 
     @Override
@@ -101,8 +105,6 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
             int result=tts.setLanguage(Locale.KOREA);
             if(result==TextToSpeech.LANG_MISSING_DATA||result==TextToSpeech.LANG_NOT_SUPPORTED){
                 Log.e("TTS","This Language is not supported");
-            }else{
-                speakOut();
             }
         }else {
             Log.e("TTS","Initilization Failed");
@@ -110,10 +112,11 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
     }
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if(tts!=null){ // 사용한 TTS객체 제거
             tts.stop();
             tts.shutdown();
+            tts=null;
         }
-        super.onDestroy();
     }
 }
