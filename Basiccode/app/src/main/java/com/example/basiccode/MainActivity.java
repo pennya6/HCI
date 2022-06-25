@@ -15,6 +15,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +48,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     PreviewView previewView;
+    View view;
     Button startButton;
     Button stopButton;
     Button recogButton;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         recogButton=findViewById(R.id.RecogButton); //인식버튼
+        view=findViewById(R.id.View); //빨간 박스
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
 
@@ -87,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     bindPreview();
                     bindImageCapture();
+                    //빨간 박스 동적 크기 조정
+                    FrameLayout.LayoutParams lp = null;
+                    lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+                    lp.height=previewView.getHeight()/2;
+                    lp.width=previewView.getWidth()/2;
+                    view.setLayoutParams(lp);
                     //drawOn.setVisibility(View.VISIBLE);
                     //previewView.addView(drawOn);
 
@@ -121,15 +129,19 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("UnsafeOptInUsageError")
     public void analyze(@NonNull ImageProxy imageProxy) {
         Bitmap bitmap;
-        Bitmap rotatedBitmap;
+        Bitmap sliceBitmap;
 
         @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
         Image mediaImage=imageProxy.getImage();
         bitmap = mediaImageToBitmap(mediaImage);
-        rotatedBitmap=rotateBitmap(bitmap,imageProxy.getImageInfo().getRotationDegrees());
+//        rotatedBitmap=rotateBitmap(bitmap,imageProxy.getImageInfo().getRotationDegrees());
 
-        InputImage image =
-                InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+//        InputImage image =
+//                InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+
+        //비트맵 이미지 슬라이스
+        sliceBitmap = Bitmap.createBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        InputImage image = InputImage.fromBitmap(sliceBitmap, imageProxy.getImageInfo().getRotationDegrees());
 
         //구글 이미지 크기 확인
         //image crop
