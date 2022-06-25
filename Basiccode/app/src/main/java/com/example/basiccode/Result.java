@@ -91,7 +91,7 @@ public class Result extends AppCompatActivity implements TextToSpeech.OnInitList
         //음성톤 설정
         tts.setPitch((float)0.8);
         //음성 속도 지정
-        tts.setSpeechRate((float)0.8);
+        tts.setSpeechRate((float)1.0);
         //출력할 텍스트,
         tts.speak(name,TextToSpeech.QUEUE_ADD,null,"id1");
         tts.speak(efficacy,TextToSpeech.QUEUE_ADD,null,"id2");

@@ -11,23 +11,36 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imageview"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="70dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.497"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout"-->
+        <!--            tools:srcCompat="@tools:sample/avatars"/>-->
+
+
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp">
+            android:layout_height="200dp">
 
-        </androidx.camera.view.PreviewView>
-<!--        <ImageView-->
-<!--            android:id="@+id/imageview"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="70dp"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHorizontal_bias="0.497"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout"-->
-<!--            tools:srcCompat="@tools:sample/avatars"/>-->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp">
+            </androidx.camera.view.PreviewView>
 
+            <View
+                android:id="@+id/View"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:background="@drawable/red_square" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,7 +70,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Recognition" />
-
 
     </LinearLayout>
 
